@@ -7,7 +7,7 @@ const { delay, welcome } = require("./src/utils");
 
 async function main() {
   welcome();
-  console.log(`Đang khởi tạo socket...\n`.yellow);
+  console.log(`Initializing socket...\n`.yellow);
 
   await delay(1000);
 
@@ -22,23 +22,23 @@ async function main() {
   } else if (proxySource.type === "url") {
     proxies = await fetchProxies(proxySource.source);
   } else if (proxySource.type === "none") {
-    console.log("Không có proxy nào được chọn. Kết nối trực tiếp.".cyan);
+    console.log("No proxy selected. Connect directly.".cyan);
   }
 
   if (proxySource.type !== "none" && proxies.length === 0) {
-    console.error("Không tìm thấy proxy. Đang thoát...".red);
+    console.error("Proxy not found. Exiting...".red);
     return;
   }
 
-  console.log(proxySource.type !== "none" ? `Tìm thấy ${proxies.length} proxy`.green : "Bật chế độ noproxy".green);
+  console.log(proxySource.type !== "none" ? `Find ${proxies.length} proxy`.green : "Enable noproxy mode".green);
 
   const userIDs = await readLines("data.txt");
   if (userIDs.length === 0) {
-    console.error("Không tìm thấy ID người dùng nào trong data.txt. Đang thoát...".red);
+    console.error("No user ID found in data.txt. Exiting...".red);
     return;
   }
 
-  console.log(`Tìm thấy ${userIDs.length} tài khoản\n`.green);
+  console.log(`Find ${userIDs.length} account\n`.green);
 
   const connectionPromises = userIDs.flatMap((userID) => (proxySource.type !== "none" ? proxies.map((proxy) => bot.connectToProxy(proxy, userID)) : [bot.connectDirectly(userID)]));
 
