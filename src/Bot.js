@@ -21,10 +21,10 @@ class Bot {
         this.proxyIP = response.data.ip;
         return response.data.ip;
       } else {
-        throw new Error(`Không thể kiểm tra IP của proxy. Status code: ${response.status}`);
+        throw new Error(`Unable to check proxy IP. Status code: ${response.status}`);
       }
     } catch (error) {
-      throw new Error(`Error khi kiểm tra IP của proxy: ${error.message}`);
+      throw new Error(`Error when checking proxy IP: ${error.message}`);
     }
   }
 
@@ -36,13 +36,13 @@ class Bot {
         const response = await axios.get(this.config.ipCheckURL, {
           httpsAgent: agent,
         });
-        console.log(`Đã kết nối proxy ip: ${proxyIP}`.green);
+        console.log(`Connected proxy ip: ${proxyIP}`.green);
         return response.data;
       } catch (error) {
-        console.error(`Bỏ qua proxy ${proxyIP} do lỗi kết nối: ${error.message}`.yellow);
+        console.error(`Skip proxy ${proxyIP} due to connection error: ${error.message}`.yellow);
         return null;
       }
-    } else console.error(`Bỏ qua proxy ${proxyIP} do lỗi kết nối`.yellow);
+    } else console.error(`Skip proxy ${proxyIP} due to connection error`.yellow);
   }
 
   async connectToProxy(proxy, userID) {
@@ -78,7 +78,7 @@ class Bot {
         const msg = JSON.parse(message);
 
         if (msg.action === "AUTH") {
-          console.log(`Nhận auth với id: ${msg.id}`.blue);
+          console.log(`Get authenticated with id: ${msg.id}`.blue);
           // console.log(msg);
           // process.exit();
           const authResponse = {
@@ -94,23 +94,23 @@ class Bot {
             },
           };
           ws.send(JSON.stringify(authResponse));
-          console.log(`Gửi yêu cầu đăng nhập`.green);
+          console.log(`Submit login request`.green);
         } else if (msg.action === "PONG") {
-          console.log(`Server trả về PONG id: ${msg.id}`.blue);
+          console.log(`Server returns PONG id: ${msg.id}`.blue);
         }
       });
 
       ws.on("close", (code, reason) => {
-        console.log(`Ngắt kết nối với mã: ${code}, reason: ${reason}`.yellow);
+        console.log(`Disconnect with code: ${code}, reason: ${reason}`.yellow);
         setTimeout(() => this.connectToProxy(proxy, userID), this.config.retryInterval);
       });
 
       ws.on("error", (error) => {
-        console.error(`Lỗi WebSocket ${proxy}: ${error.message}`.red);
+        console.error(`Error WebSocket ${proxy}: ${error.message}`.red);
         ws.terminate();
       });
     } catch (error) {
-      console.error(`Không thể đăng nhập với proxy ${proxy}: ${error.message}`.red);
+      console.error(`Cannot login with proxy ${proxy}: ${error.message}`.red);
     }
   }
 
@@ -130,7 +130,7 @@ class Bot {
       });
 
       ws.on("open", () => {
-        console.log(`Kết nối không cần proxy`.cyan);
+        console.log(`Connect without proxy`.cyan);
         this.sendPing(ws, "Direct IP");
       });
 
@@ -138,7 +138,7 @@ class Bot {
         const msg = JSON.parse(message);
 
         if (msg.action === "AUTH") {
-          console.log(`Nhận auth với id: ${msg.id}`.blue);
+          console.log(`Get authenticated with id: ${msg.id}`.blue);
           const authResponse = {
             id: msg.id,
             origin_action: "AUTH",
@@ -152,23 +152,23 @@ class Bot {
             },
           };
           ws.send(JSON.stringify(authResponse));
-          console.log(`Gửi yêu cầu đăng nhập`.green);
+          console.log(`Submit login request`.green);
         } else if (msg.action === "PONG") {
-          console.log(`Server trả về PONG id: ${msg.id}`.blue);
+          console.log(`Server returns PONG id: ${msg.id}`.blue);
         }
       });
 
       ws.on("close", (code, reason) => {
-        console.log(`Ngắt kết nối: ${code}, reason: ${reason}`.yellow);
+        console.log(`Disconnect: ${code}, reason: ${reason}`.yellow);
         setTimeout(() => this.connectDirectly(userID), this.config.retryInterval);
       });
 
       ws.on("error", (error) => {
-        console.error(`Lỗi rồi: ${error.message}`.red);
+        console.error(`Error: ${error.message}`.red);
         ws.terminate();
       });
     } catch (error) {
-      console.error(`Không thể đăng nhập: ${error.message}`.red);
+      console.error(`Cannot log in: ${error.message}`.red);
     }
   }
 
@@ -182,7 +182,7 @@ class Bot {
         data: {},
       };
       ws.send(JSON.stringify(pingMessage));
-      console.log(`Gửi Ping tới server với id ${pingId} | ip: ${proxyIP}`.cyan);
+      console.log(`Send Ping to server with id ${pingId} | ip: ${proxyIP}`.cyan);
     }, 26000);
   }
 }
